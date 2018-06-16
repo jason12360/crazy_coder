@@ -3,10 +3,8 @@
 #2.客户端收到消息后,通过unpack方法将数据解析生成fileforlder
 import os
 import sys
-if __name__ == '__main__':
-	from file import File
-else:
-	from model.file import File
+from file import File
+
 
 class Filefolder:
 

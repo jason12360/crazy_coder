@@ -3,10 +3,10 @@ from tkinter import *
 import tkinter.font as tkFont
 import tkinter.messagebox
 # 导入自定义widgets模块  
-from view.widgets_interface.view_block import Block
-from view.widgets_interface.my_widgets import *
+from view_block import Block
+from my_widgets import *
 #导入注册子视图模块
-from view.register_view import Register_View
+from register_view import Register_View
 
 
 #登录子视图类

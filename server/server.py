@@ -2,15 +2,13 @@
 # 第一个进程将使用tcp首先接收客户端连接请求,为客户端分配单独进程处理相应请求
 # 第二个进程将使用udp进行聊天通信
 from socket import *
-from signal import *
 from multiprocessing import Process,Queue
 import signal
-if __name__=='__main__':
-    import web.server_control_port as server_control_port
-    import web.chat_port_server as chat_port
-else:
-    import server_control_port
-    import chat_port
+import sys,os
+sys.path.append('../model/')
+sys.path.append('./web/')
+import server_control_port 
+import chat_port_server
 
 #创建队列
 Q=Queue(1)

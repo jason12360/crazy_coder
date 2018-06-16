@@ -4,16 +4,11 @@ import signal
 from threading import Thread
 import sys,os
 import time
-if __name__=='main':
-    import data_port
-    import my_protocol
-    from file_folder import *
-    from database_handler import *
-else:
-    import web.data_port as data_port
-    import web.my_protocol as my_protocol
-    from model.file_folder import *
-    from model.database_handler import *
+import data_port
+import my_protocol
+from file_folder import *
+from database_handler import *
+
 # 服务器文件夹
 SYS_FIlE_PATH = "/home/tarena/ftp_web(2)/"
 
@@ -70,7 +65,6 @@ class MyFtp_Server():
         self.client = conn
         self.addr=addr
         self.ms = My_Mysql()
-        self.file_all = self.ms.select_all_files()
     # 获取list
     #子线程给父进程传参用
     def set_data(self,v):
@@ -78,6 +72,7 @@ class MyFtp_Server():
         R = v   
 
     def list(self, foldername):
+        self.file_all = self.ms.select_all_files()
         # 请求服务器内的文件，整理和文件列表和属性列表
         data = self.file_all.pack()
         #发送整个服务器文件的属性列表给客户端,data以字符串的形式
@@ -116,37 +111,40 @@ class MyFtp_Server():
 
     # 接受客户端上传请求，接收文件
     def receive(self, f_property,filename):
+        #初始化错误码
         CODE_NUM=0
-        filename = os.path.split(filename)[-1]
+        # filename = os.path.split(filename)[-1]
         # 搜索系统是否有这个文件
         fd = self.ms.select_file_by_filename(filename)
         if fd == None:
-            # 不存在,可以上传
-            t = Thread(target=data_port.run,args=('u',self.addr, filename,self,set_data))
+            # 不存在,可以上传,给予客户端回应,客户端接收到此消息后,打开副线程进行主动连接,并回复
+            #服务端相应端口号,用于数据通信
+            my_protocol.upld_bale_TCP(self.client,'','go')
+            DATA_HOST = self.addr[0]
+            DATA_PORT = int(my_protocol.unpake_TCP(self.client)[2])
+            DATA_ADDR = (DATA_HOST, DATA_PORT)
+            
+            t = Thread(target=data_port.run,args=('u',DATA_ADDR,f_property,self.ms))
+            t.setDaemon(True)
             t.start()
-            # #防止没listen 就connect
-            # time.sleep(2)
-            t.join()
-            #属性为空，返回报错代码
-            my_protocol.dwld_bale_TCP(self.client,'','go')
-            #编写属性
-            op_file = SYS_FIlE_PATH+filename
-            up=File(filename,
-                    os.path.getsize(op_file),
-                    op_file,
-                    time.strftime('%Y-%m-%d %H:%M:%S'),
-                    time.strftime('%Y-%m-%d %H:%M:%S'))   
-            #添加到mysql
-            self.ms.add_file(up)
-            #TODO 判断用户是否下载成功，是---》添加日志
-            if R==12:
-                #把用户的操作添加到数据库里的日志
-                log=(self.addr,filename,time.strftime('%Y-%m-%d %H:%M:%S'),"上传")
-                self_ms.add_userlog(log) 
-                 #报错代码 10为下载成功 11为下载失败
-                CODE_NUM=12
-            else:
-                CODE_NUM=13
+            # #编写属性
+            # op_file = SYS_FIlE_PATH+filename
+            # up=File(filename,
+            #         os.path.getsize(op_file),
+            #         op_file,
+            #         time.strftime('%Y-%m-%d %H:%M:%S'),
+            #         time.strftime('%Y-%m-%d %H:%M:%S'))   
+            # #添加到mysql
+            # self.ms.add_file(up)
+            # #TODO 判断用户是否下载成功，是---》添加日志
+            # if R==12:
+            #     #把用户的操作添加到数据库里的日志
+            #     log=(self.addr,filename,time.strftime('%Y-%m-%d %H:%M:%S'),"上传")
+            #     self_ms.add_userlog(log) 
+            #      #报错代码 10为下载成功 11为下载失败
+            #     CODE_NUM=12
+            # else:
+            #     CODE_NUM=13
             # Q.put(CODE_NUM)
             #chat进程  get就ok
    
@@ -155,22 +153,27 @@ class MyFtp_Server():
             # 返回不存在的代码
             CODE_NUM='3'
             #属性为空，返回报错代码
-            my_protocol.dwld_bale_TCP(self.client,'',CODE_NUM)
+            my_protocol.upld_bale_TCP(self.client,'',CODE_NUM)
  
 
     # 登录
     def login(self, username, password):
         # 和mysql比对后返回
         result = self.ms.select_user(username)
-        if password == result[0][2]:
-            self.client.send(b'Y')
-        else:
+        if not result:
             self.client.send(b'N')
+        else: 
+            if password == result[0][2]:
+                self.username = username
+                self.client.send(b'Y')
+            else:
+                self.client.send(b'N')
    
     def register(self,username,password):
         result = self.ms.select_user(username)
         if not result:
             self.ms.add_user(username,password)
+            self.username = username
             self.client.send(b'Y')
         else:
             self.client.send(b'N')

@@ -13,12 +13,15 @@ class File(object):
     def create_file(self, file_path):
         self.filename = os.path.split(file_path)[-1]
         self.filesize = os.path.getsize(file_path)
-        self.filelocal_path = os.path.split(file_path)[0]
+        self.server_path = os.path.split(file_path)[0]
         self.filetype = None
         self.usrid = None
 
     def get_info(self):
         return (self.filename, self.filesize, self.file_last_mtime, self.file_create_time, self.server_path)
+
+    def get_info_for_db(self):
+        return (self.filename, int(self.filesize), self.file_last_mtime, self.file_create_time, self.server_path)
 
     def get_info_for_pack(self):
         return (self.filename, str(self.filesize), self.file_last_mtime, self.file_create_time, self.server_path)
@@ -75,7 +78,7 @@ class File(object):
 def main():
     import time
     f = File()
-    f.create_file('./file.py')
+    f.create_file('../model/my_protocol.py')
     f.set_last_mtime('2108-01-01 07:22:22')
     f.set_file_create_time('2108-01-01 07:22:22')
     f.set_server_path('')
@@ -83,6 +86,7 @@ def main():
     f1 = File()
     f1.unpack(f.pack())
     print(f1.pack())
+    print(f.get_local_path())
 
 
 if __name__ == '__main__':

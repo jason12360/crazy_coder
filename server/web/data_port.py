@@ -1,24 +1,17 @@
 import time
 import sys,os
 from socket import *
-if __name__=='main':
-    import file
-else:
-    import model.file
+from file import *
+import my_protocol
 # 服务器文件夹
 SYS_FIlE_PATH= "/home/tarena/ftp_web(2)/"
 #上传路径
-SYS_FIlE_PATH_O= "/home/tarena/ftp_web(2)/op/"
+SYS_FIlE_PATH_O= "/home/tarena/ftp_base/"
 
-def run(op,addr,filename,set_data):
-    DATA_HOST = addr[0]
-    print(DATA_HOST)
-    DATA_PORT = 18528
-    DATA_ADDR = (DATA_HOST, DATA_PORT)
+def run(op,addr,f_property,ms):
     conn = socket()
-    conn.connect(DATA_ADDR)
-    #等待客户端的数据段请求过来
-    # conn,addr=s.accept()
+    time.sleep(0.1)
+    conn.connect(addr)
 	#通过套接字做相应处理
     if op=='d':
         try:
@@ -47,29 +40,36 @@ def run(op,addr,filename,set_data):
                 print('用户接受失败')
                 CODE_NUM=11
                 set_data(CODE_NUM)
+        finally:
+            conn.close()
+
+
     elif op=='u': 
         try:
             #接收文件到服务器
             #路径选择
-            op_path=SYS_FIlE_PATH_O+filename      
+            file = File()
+            file.unpack(f_property)
+            op_path=SYS_FIlE_PATH_O+file.get_name()
+            file.set_server_path(op_path)      
             with open(op_path,'wb') as f:
                 while True:
                     data=conn.recv(1024)
-                    if data==b'@end':
+                    if data==b'upld+ + +@end':
                         break
                     f.write(data)
         except Exception as E:
             print(E)
-            CODE_NUM=13
-            set_data(CODE_NUM)
+            #如果发生错误则通知客户端服务器端发生错误
+            conn.send(b'upld+ +13+@end')
         else:
+            #没有发生错误,通知客户端发送成功
             time.sleep(0.1)
             #接收完成发送ok
-            conn.send(b'ok')
-            print('用户上传完成')
+            ms.add_file(file)
+            print('finish')
+            conn.send(b'upld+ +ok+@end')
             #返回结果给进程
-            CODE_NUM=12
-            set_data(CODE_NUM)
-
-    # #关闭套接字
-    conn.close()
+        finally:
+             # #关闭套接字
+            conn.close()

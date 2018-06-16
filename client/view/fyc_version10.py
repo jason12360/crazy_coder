@@ -19,18 +19,8 @@ from tkinter.font import Font
 from tkinter.ttk import *
 import tkinter.filedialog
 from tkinter import messagebox
-
-if __name__=='__main__':
-    from widgets_interface.my_widgets import *
-
-else:
-    from view.widgets_interface.my_widgets import *
-
-# import tkinter.simpledialog as tkSimpleDialog   #askstring()
-
-
-
-
+#导入自定义tkiner控件模块
+from my_widgets import *
 
 
 def show_dw_filedialog(aaa):

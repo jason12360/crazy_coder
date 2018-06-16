@@ -2,12 +2,9 @@
 
 import pymysql
 import re
-if __name__=='__main__':
-    from file import File
-    from file_folder import Filefolder
-else:
-    from model.file import File
-    from model.file_folder import Filefolder
+from file import File
+from file_folder import Filefolder
+
 
 
 
@@ -80,9 +77,9 @@ class My_Mysql:
                                first_create_time datetime)default charset=utf8;')
 
     def add_file(self, file):
-        sql = 'insert into file(filename,filesize,file_path_on_server,\
-                                last_modified_time,first_create_time)\
-                                 values("%s",%d,"%s","%s","%s");' % file.get_info()
+        sql = 'insert into file(filename,filesize,\
+                                last_modified_time,first_create_time,file_path_on_server)\
+                                 values("%s",%d,"%s","%s","%s");' % file.get_info_for_db()
         self.cursor.execute(sql)
         self.db.commit()
     #程序刚开始时读取全部文件信息,返回文件夹

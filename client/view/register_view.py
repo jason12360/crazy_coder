@@ -1,7 +1,7 @@
 from tkinter import *
 import tkinter.messagebox
-from view.widgets_interface.view_block import Block
-from view.widgets_interface.my_widgets import *
+from view_block import Block
+from my_widgets import *
 
 
 
@@ -12,7 +12,7 @@ class Register_View(Block):
         super().__init__(parent)
         self.config(height=400, width=300)
         self.place(relx=0.75, rely=0.5, anchor=CENTER)
-        self.bind_all('<Return>',self.login)
+        self.bind_all('<Return>',self.register)
 
     def buttonbox(self):
         box = Frame(self)

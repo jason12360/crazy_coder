@@ -4,7 +4,7 @@ import sys
 #导入正则表达式模块
 import re
 # 导入自定义异常模块
-from view.view_exception import *
+from view_exception import *
 # 这是一个控制器类,用来控制视图的IO响应
 
 
