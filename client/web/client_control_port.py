@@ -58,7 +58,7 @@ def comment_handler(comment, c_ftp):
     elif data[0] == "upld":
         return c_ftp.upload_request(data[1],data[2])
     elif data[0] == "dwld":
-        return c_ftp.download_request(data[2])
+        return c_ftp.download_request(data[1],data[2])
         # 这两个功能只靠tcp---------------------------
     elif data[0] == 'chat':
         # data[2]是聊天内容
@@ -134,28 +134,37 @@ class MyFtp_Client():
                 t.start()
         return CODE_NUM
 
-    def download_request(self, filename):
-        CODE_NUM=0
+    def download_request(self,download_path,filename):
+        CODE_NUM="1"
         my_protocol.dwld_bale_TCP(self.s,'',filename)
         # 等待接收
         data = my_protocol.unpake_TCP(self.s)
         if data != -1:
             if data[2] == '2':
                 # print("文件在服务器里不存")
-                CODE_NUM=2
-            else:
-                # 接收属性
-                f_property = data[1]
-                print(f_property)
-                # 开辟新的线程，接收文件
+                CODE_NUM='2'
+            elif data[2]=='go':
+                file_path = download_path +'/'+filename
+                DATA_HOST = self.s.getsockname()[0]
+                DATA_PORT = 0
+                DATA_ADDR = (DATA_HOST, DATA_PORT)
+                data_socket = socket()
+                data_socket.setsockopt(SOL_SOCKET,SO_REUSEADDR,1)
+                #客户端监听套接字
+                data_socket.bind(DATA_ADDR)
+                # data_socket.listen(10)
+                data_addr = data_socket.getsockname()
+                #给服务端发送端口号
+                my_protocol.upld_bale_TCP(self.s,'',str(data_socket.getsockname()[1]))
+                #等待服务端连接
+                data_socket.close()
                 t = Thread(target=client_data_port.run, args=(
-                    'd', self.data_socket, filename,self.set_data))
+                    'd', data_addr,file_path,self.view_handler))
                 t.start()
-                t.join()
-                if R==10:
-                    CODE_NUM=10
-                else:
-                    CODE_NUM=11
+                # if R==10:
+                #     CODE_NUM=10
+                # else:
+                #     CODE_NUM=11
         return CODE_NUM
 
     def chat_request(self, message):

@@ -88,25 +88,30 @@ class MyFtp_Server():
             # 返回不存在的代码
             CODE_NUM='2'
             #属性为空，返回报错代码
-            my_protocol.dwld_bale_TCP(self.client,'',data)
+            my_protocol.dwld_bale_TCP(self.client,'',CODE_NUM)
         else:
-            t = Thread(target=data_port.run, args=('d', self.addr, filename,self.set_data))
+            my_protocol.upld_bale_TCP(self.client,'','go')
+            #建立套接字
+            DATA_HOST = self.addr[0]
+            DATA_PORT = int(my_protocol.unpake_TCP(self.client)[2])
+            DATA_ADDR = (DATA_HOST, DATA_PORT)
+            t = Thread(target=data_port.run, args=('d', DATA_ADDR,filename,self.ms))
             t.start()
             #回发一个属性过去 
-            f_property=fd.pack()
-            print(f_property)
-            my_protocol.dwld_bale_TCP(self.client,str(f_property),'')
-            t.join()
+            # f_property=fd.pack()
+            # print(f_property)
+            # my_protocol.dwld_bale_TCP(self.client,str(f_property),'')
+            # t.join()
             #TODO 判断用户是否下载成功，是---》添加日志
             #把用户的操作添加到数据库里的日志
 
-            if R==10:
-                log=(self.addr,filename,time.strftime('%Y-%m-%d %H:%M:%S'),"下载")
-                self.ms.add_userlog(log)
-                #报错代码 10为下载成功 11为下载失败
-                CODE_NUM=10
-            else:
-                CODE_NUM=11 
+            # if R==10:
+            #     log=(self.addr,filename,time.strftime('%Y-%m-%d %H:%M:%S'),"下载")
+            #     self.ms.add_userlog(log)
+            #     #报错代码 10为下载成功 11为下载失败
+            #     CODE_NUM=10
+            # else:
+            #     CODE_NUM=11 
 
 
     # 接受客户端上传请求，接收文件

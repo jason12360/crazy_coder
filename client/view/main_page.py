@@ -7,8 +7,8 @@ class MainPage(Application):
 		self.login_handler = login_handler
 		self.login_handler.setup()
 	def download(self,event):
-		#self.login_handler.do_dwld(self.dwlabel.cget('text'))
-		self.login_handler.do_list()
+		download_path = super().download(event)
+		self.login_handler.do_dwld(self.dwlabel.cget('text'),download_path)
 	def upload(self,event):
 		super().upload(event)
 		self.login_handler.do_upld(self.upName)

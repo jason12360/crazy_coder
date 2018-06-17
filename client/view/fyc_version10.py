@@ -350,7 +350,7 @@ class Application(MyGUI):
 
     def download(self,event):
         self.dwName=tkinter.filedialog.askdirectory()
-        print(self.dwName)
+        return self.dwName
     def help_about(self):
         about='''
         团队：疯狂码头

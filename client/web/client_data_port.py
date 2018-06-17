@@ -41,7 +41,6 @@ def run(op,data_addr,file,view_handeler):
             time.sleep(0.1)
             s.send(b'upld+ + +@end')
             ask = my_protocol.unpake_TCP(s)[2]
-            print(ask)
             if ask=='ok':
                 CODE_NUM='0'
                 view_handeler.do_message(CODE_NUM) 
@@ -55,9 +54,8 @@ def run(op,data_addr,file,view_handeler):
     elif op=='d':
         try: 
             #接收文件(用户的下载)
-            #路径选择
-            op_path=SYS_FIlE_PATH_D+filename      
-            with open(op_path,'wb') as f:
+            #路径选择   
+            with open(file,'wb') as f:
                 while True:
                     data=s.recv(1024)
                     if data==b'@end':
@@ -65,18 +63,23 @@ def run(op,data_addr,file,view_handeler):
                     f.write(data)
         except Exception as E:
             print(E)
-            CODE_NUM=11
-            set_data(CODE_NUM)
+            CODE_NUM='12'
+            s.send(b'12')
+            view_handeler.do_message(CODE_NUM)
         else:
             time.sleep(0.1)
             #下载完成发送ok
             s.send(b'ok')
-            print('下载完成')
+            
             #返回结果给进程
-            CODE_NUM=10
-            set_data(CODE_NUM)
         finally:
-           s.close() 
+            CODE_NUM = s.recv(1024).decode()
+            if CODE_NUM =='11':
+                view_handeler.do_message(CODE_NUM)
+            else:
+                view_handeler.do_message('0')
+                print('下载完成')
+            s.close() 
         # #关闭套接字
 
     

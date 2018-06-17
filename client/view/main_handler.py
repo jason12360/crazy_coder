@@ -15,11 +15,10 @@ class Main_handler:
 		self.page = page
 		self.ERROR_MAP={
 			'0':'操作成功',
-			# 2 :'服务器文件不存在',
+			"2" :'服务器文件不存在',
 			'3' :'文件已存在',
-			# 10:'下载成功',
-			# 11:'下载失败',
-			# 12:'上传成功',
+			'11':'下载失败,服务器端发生错误',
+			'12':'下载失败,客户端端发生错误',
 			"13":'上传失败,服务器端发生错误',
 			"14":'上传失败,客户端发生错误'
 			#这里定义各种错误返回什么信息
@@ -43,8 +42,9 @@ class Main_handler:
 		self.file_folder.unpack(file_folder_str)
 		self.page.files_display(self.file_folder.to_list())
 #当用户点击下载，调用此函数
-	def do_dwld(self,filename):
-		command = "dwld+"+' '+'+'+filename+"+@end"
+	def do_dwld(self,filename,download_path):
+
+		command = "dwld+"+download_path+'+'+filename+"+@end"
 		result = self.comment_handler(command,self.client)
 		self.do_message(result)
 

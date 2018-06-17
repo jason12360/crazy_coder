@@ -4,7 +4,7 @@ from socket import *
 from file import *
 import my_protocol
 # 服务器文件夹
-SYS_FIlE_PATH= "/home/tarena/ftp_web(2)/"
+SYS_FIlE_PATH= "/home/tarena/ftp_base/"
 #上传路径
 SYS_FIlE_PATH_O= "/home/tarena/ftp_base/"
 
@@ -16,7 +16,7 @@ def run(op,addr,f_property,ms):
     if op=='d':
         try:
             #路径选择
-            op_path=SYS_FIlE_PATH+filename      
+            op_path=SYS_FIlE_PATH+f_property      
             with open(op_path,'rb') as f:
                 while True:
                     data=f.read(1024)
@@ -26,21 +26,23 @@ def run(op,addr,f_property,ms):
         except Exception as E:
             print(E)
             #返回结果给进程
-            CODE_NUM=11
-            set_data(CODE_NUM)
+            CODE_NUM='11'
+            # conn.send(b'upld+ +11+@end')
         else:
             time.sleep(0.1)
             conn.send(b'@end')
-            ask=conn.recv(1024,10)
+            ask=conn.recv(1024)
             if ask==b'ok':
+                CODE_NUM='0'
                 print('用户接受完毕')
-                CODE_NUM=10
-                set_data(CODE_NUM)
             else:
                 print('用户接受失败')
-                CODE_NUM=11
-                set_data(CODE_NUM)
+                CODE_NUM='11'
         finally:
+            if CODE_NUM == '11':
+                conn.send(b'11')
+            else:
+                conn.send(b'ok')
             conn.close()
 
 
