@@ -26,11 +26,12 @@ class Main_handler:
 	def bind(self,comment_handler,client):
 		self.comment_handler = comment_handler
 		self.client = client
-	def setup(self):
+	def setup(self,child_pid,send_queue):
 		#初始化时调用此方法获取相关数据
 		#获取用户名并显示
 		#获取在线用户信息并显示
-
+		self.child_pid,self.send_queue = child_pid,send_queue
+		self.page.chat_view.setup(child_pid,send_queue)
 		#获取文件列表并显示
 		self.do_list()
 				
@@ -38,9 +39,10 @@ class Main_handler:
 	def do_list(self):
 		command = "list+ + +@end"
 		file_folder_str = self.comment_handler(command,self.client)
-		self.file_folder = Filefolder()
-		self.file_folder.unpack(file_folder_str)
-		self.page.files_display(self.file_folder.to_list())
+		if file_folder_str != r'{}':
+			self.file_folder = Filefolder()
+			self.file_folder.unpack(file_folder_str)
+			self.page.files_display(self.file_folder.to_list())
 #当用户点击下载，调用此函数
 	def do_dwld(self,filename,download_path):
 
@@ -67,7 +69,14 @@ class Main_handler:
 	#向数据端发送指令
 		command = "upld+"+file_property+'+'+my_file.get_name()+"+@end"
 		result = self.comment_handler(command,self.client)
+	
 	#处理异常	
 		self.do_message(result)
 	#等到数据端接收完成后,刷新文件列表页面
+
+	def display_chat(self,sig,frame):
+		print('收到信号..')
+		# print(self.client.get_chat_word())
+		self.page.chat_view.show(self.client.get_chat_word())
+
 		

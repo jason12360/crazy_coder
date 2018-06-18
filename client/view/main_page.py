@@ -5,7 +5,7 @@ class MainPage(Application):
 		super().__init__()
 	def register_handler(self,login_handler):
 		self.login_handler = login_handler
-		self.login_handler.setup()
+
 	def download(self,event):
 		download_path = super().download(event)
 		self.login_handler.do_dwld(self.dwlabel.cget('text'),download_path)

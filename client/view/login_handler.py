@@ -1,6 +1,6 @@
 #导入MD5加密模块
 import hashlib
-import sys
+import sys,os
 #导入正则表达式模块
 import re
 # 导入自定义异常模块
@@ -17,6 +17,11 @@ class Login_handler:
         self.client = client
     # 定义当登录子界面登录按钮被触发时执行的事件
 
+    def setup(self,child_pid,send_queue):
+        #初始化时调用此方法获取相关数据
+        #获取用户名并显示
+        #获取在线用户信息并显示
+        self.child_pid,self.send_queue = child_pid,send_queue
     def do_login(self):
         username = self.page.login_view.e1.get()
         password = self.page.login_view.e2.get()
@@ -28,6 +33,7 @@ class Login_handler:
             command = "login+"+username+'+'+password+"+@end"
             response = self.comment_handler(command,self.client)
             if response == 'Y':
+                self.send_info_to_server(username)
                 self.page.close()
             else:
                 raise UsrnameOrPasswdNotExistException()
@@ -40,6 +46,8 @@ class Login_handler:
             self.page.login_view.show_error_message('用户名必须为英文字母开头\n长度必须为8到16位\n不能包含除数字字母下划线以外的其他字符')
         except PasswdNotMeetRequirements:
             self.page.login_view.show_error_message('密码长度必须为8到16位\n不能包含除数字字母下划线以外的其他字符')
+        except Exception as e:
+            print(e)
     # 定义当登录子界面注册按钮被触发时执行的事件
 
     def login_do_register(self):
@@ -58,6 +66,7 @@ class Login_handler:
             response = self.comment_handler(command,self.client)
             if response == 'Y':
                 self.page.close()
+                self.send_info_to_server(username)
             else:
                 raise UsrnameOrPasswdAlreadyExistException()
 
@@ -99,3 +108,7 @@ class Login_handler:
         obj.update(password.encode())
         return obj.hexdigest()
 
+    def send_info_to_server(self,username):
+        msg = 'L '+ username
+        self.send_queue.put(msg)
+        os.kill(self.child_pid,41)

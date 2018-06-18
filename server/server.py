@@ -51,10 +51,10 @@ def main():
 # 设置父进程信号处理僵尸进程
 # TODO
     signal.signal(signal.SIGCHLD, signal.SIG_IGN)
-    t1 = Process(target=control_port)
-    # t2 = Process(target=chat_port)
-    t1.start()
-    # t2.start()
+    t2 = Process(target=chat_port_server.run)
+    t2.start()
+    control_port()
+
 
 if __name__ == '__main__':
 	main()

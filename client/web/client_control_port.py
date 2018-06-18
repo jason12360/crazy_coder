@@ -2,8 +2,10 @@ from socket import *
 import sys
 import os
 import time
+import signal
 from threading import Thread
 import client_data_port
+#导入model相关模块
 from file import *
 from file_folder import *
 from database_handler import *
@@ -18,25 +20,29 @@ file_path = '/home/tarena/ftp_web(2)/'
 #错误代码
 # CODE_NUM=0
 
-def run(ctrl_socket):
+def run(ctrl_socket,child_pid,recv_queue,send_queue):
     # 把myconnection传给handler进行相关的登录操作
     # 创建客户端请求对象
     global _ctrl_socket
     _ctrl_socket = ctrl_socket
-    c_ftp = MyFtp_Client(_ctrl_socket)
-    # 界面
-    # login_page = Login_Page()
-    # login_handler = Login_handler(login_page)
-    # login_handler.bind(comment_handler,c_ftp)
-    # login_page.register_handler(login_handler)
-    # login_page.run()
+    c_ftp = MyFtp_Client(_ctrl_socket,recv_queue)
+#    界面
+    login_page = Login_Page()
+    login_handler = Login_handler(login_page)
+    login_handler.bind(comment_handler,c_ftp)
+    login_page.register_handler(login_handler)
+    login_handler.setup(child_pid,send_queue)
+    login_page.run()
     main_page = MainPage()
     global main_handler
     main_handler =Main_handler(main_page)
     c_ftp.set_view_handler(main_handler)
     main_handler.bind(comment_handler,c_ftp)
     main_page.register_handler(main_handler)
-    main_handler.setup()
+    #设置父进程监听子进程信号
+    signal.signal(40,main_handler.display_chat)
+
+    main_handler.setup(child_pid,send_queue)
     main_page.run() 
     # 协议结构：请求类别 + 属性 + 内容 + 结束符
     # comment='list+'+str(client_add)+'+'+''+'+@end'
@@ -82,8 +88,9 @@ def comment_handler(comment, c_ftp):
 
 
 class MyFtp_Client():
-    def __init__(self, s):
+    def __init__(self, s,chat_queue):
         self.s = s
+        self.chat_queue = chat_queue
     def list_request(self, foldername=''):
         # 发送
         my_protocol.list_bale_TCP(self.s, foldername)
@@ -182,6 +189,8 @@ class MyFtp_Client():
         my_protocol.reg_request(self.s, admin, password)
         response = self.s.recv(1024).decode()
         return response
+    def get_chat_word(self):
+        return self.chat_queue.get()
     def quit_request(self):
         # 通过协议打包发送
         my_protocol.quit_bale_TCP(self.s)

@@ -61,10 +61,10 @@ class ChatView(Frame):
         # self.s.yview_moveto(1.0)
         b = Button(self,text = '发送',command=self.launch)
         b.place(relx=0,rely=0.9,relwidth=1,relheight=0.1)
-    def launch(self):
+    def show(self,text):
         if len(self.words)>19:
             self.words.pop(0)
-        self.words.append(self.t.get(1.0,END))
+        self.words.append(text)
         self.s.flush()
         self.position = 0
         step = 0.05
@@ -74,6 +74,9 @@ class ChatView(Frame):
         if self.position/step >5:
             self.s.yview_moveto(self.position-5*step)
         self.t.delete(1.0,END)
+    def launch:
+        pass
+        # self.t.get(1.0,END)
     	
 
 

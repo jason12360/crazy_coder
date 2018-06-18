@@ -311,7 +311,7 @@ class Application(MyGUI):
         ListItems(self.Tab2.title.frame,"#DDDDDD",widths,title2)
         self.Tab2.lbox.config(scrollregion=(0,0,1200,50*len(logs_list)))
         self.Tab2.lbox.flush()
-        self.Tab2.lbox.bar.place(**self.dic["Tab_scroll"])
+        # self.Tab2.lbox.bar.place(**self.dic["Tab_scroll"])
         for log in logs_list:
             ListItems(self.Tab2.lbox.frame,'#DDDDDD',widths,log).actions()
     def user_display(self,lbox,onlinelist):

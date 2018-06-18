@@ -1,4 +1,5 @@
 import re
+import os
 import tkinter as tk
 from tkinter import *
 import tkinter.font as tkFont 
@@ -79,7 +80,7 @@ class Scrollabe_Frame(Canvas):
         self.delete(self.frame)
         self.frame=Frame(self,height=2000,width=self.width,bg='#FFFFFF')
         self.create_window((0,0), window=self.frame,anchor=NW)
-
+        self.bar.pack(side=RIGHT, fill=Y)
 
 
 
@@ -106,10 +107,13 @@ class ChatView(Frame):
         b = Button(self,text = '发送  (S)',command=self.launch)
         #Mybutton(self,master,fun,**kwargs)
         b.place(relx=0,rely=0.952,relwidth=1,relheight=0.05)
-    def launch(self):
+    def setup(self,child_id,send_queue):
+    	self.child_pid= child_id
+    	self.send_queue = send_queue
+    def show(self,text):
         if len(self.words)>19:
             self.words.pop(0)
-        self.words.append(self.t.get(1.0,END))
+        self.words.append(text)
         self.s.flush()
         self.position = 0
         step = 0.05
@@ -119,6 +123,10 @@ class ChatView(Frame):
         if self.position/step >5:
             self.s.yview_moveto(self.position-5*step)
         self.t.delete(1.0,END)
+    def launch(self):
+        text = 'C '+self.t.get(1.0,END)
+        self.send_queue.put(text)
+        os.kill(self.child_pid,41)
     	
 
 

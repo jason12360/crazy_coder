@@ -122,9 +122,9 @@ class My_Mysql:
 
 def main():
     my_mysql = My_Mysql()
-    # my_mysql.create_user_table()
-    # my_mysql.create_file_table()
-    # my_mysql.create_userlog_table()
+    my_mysql.create_user_table()
+    my_mysql.create_file_table()
+    my_mysql.create_userlog_table()
     # my_mysql.add_user('jason','12345')
     # print(my_mysql.select_user('jason'))
     # f = File()
@@ -133,7 +133,7 @@ def main():
     # f.set_file_create_time(20180101101010)
     # print(f.get_info())
     # my_mysql.add_file(f)
-    print(my_mysql.select_file_by_id(1).pack())
+    # print(my_mysql.select_file_by_id(1).pack())
     # my_mysql.add_userlog((1,1,'upload',10200912000000))
     # print(my_mysql.select_userlog())
 
