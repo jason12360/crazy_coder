@@ -6,6 +6,7 @@
 # 将通过这个类的bind方法给这个类传入，
 # （接上）用于向服务端发送用户传入的信息。
 import time
+import os,sys
 from file import File
 from file_folder import Filefolder
 
@@ -14,7 +15,8 @@ class Main_handler:
 	#初始化时传入视图模块，以便调用视图的各个widgets
 		self.page = page
 		self.ERROR_MAP={
-			'0':'操作成功',
+			'0':'上传成功',
+			'4':'下载成功',
 			"2" :'服务器文件不存在',
 			'3' :'文件已存在',
 			'11':'下载失败,服务器端发生错误',
@@ -45,20 +47,27 @@ class Main_handler:
 			self.page.files_display(self.file_folder.to_list())
 #当用户点击下载，调用此函数
 	def do_dwld(self,filename,download_path):
+		if download_path != '':
+			command = "dwld+"+download_path+'+'+filename+"+@end"
+			result = self.comment_handler(command,self.client)
+			self.do_message(result)
 
-		command = "dwld+"+download_path+'+'+filename+"+@end"
-		result = self.comment_handler(command,self.client)
-		self.do_message(result)
 
-
-	def do_message(self,code):
-		if code != '0' and code !='1':
+	def do_message(self,code,filename=''):
+		if code != '0' and code !='1' and code!='4':
 			self.page.show_error_message(self.ERROR_MAP[code])
-			self.do_list()
 		elif code == '1':
 			pass
+		elif code == '0':
+			self.page.show_message(self.ERROR_MAP[code])
+			# self.do_list()
+			self.send_info_to_server('U',filename)
 		else:
 			self.page.show_message(self.ERROR_MAP[code])
+			# self.do_list()
+			self.send_info_to_server('D',filename)
+
+
 #当用户点击上传，调用此函数
 	def do_upld(self,filename):
 		my_file = File()
@@ -79,4 +88,17 @@ class Main_handler:
 		# print(self.client.get_chat_word())
 		self.page.chat_view.show(self.client.get_chat_word())
 
-		
+	def send_info_to_server(self,op,filename):
+		msg = op +' '+ filename
+		print(msg)
+		self.send_queue.put(msg)
+		os.kill(self.child_pid,41)
+
+	def do_cancel(self):
+		command = 'quit+ + +@end'
+		self.comment_handler(command,self.client)
+		self.send_info_to_server('Q','')
+		time.sleep(0.5)
+		os.kill(self.child_pid,9)
+		self.page.close()
+		sys.exit()

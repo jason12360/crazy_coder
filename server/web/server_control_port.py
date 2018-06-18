@@ -15,9 +15,10 @@ SYS_FIlE_PATH = "/home/tarena/ftp_web(2)/"
 #上传路径
 SYS_FIlE_PATH_O= "/home/tarena/ftp_web(2)/op/"
 
-def run(myconnection, addr):
+def run(myconnection, addr,s):
     # 把myconnection传给handler进行相关的登录操作
     # 以下为控制端函数
+    s.close()
     get_command(myconnection,addr)
 
 

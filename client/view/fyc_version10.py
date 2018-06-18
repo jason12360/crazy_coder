@@ -349,8 +349,12 @@ class Application(MyGUI):
         print("未绑定")
 
     def download(self,event):
-        self.dwName=tkinter.filedialog.askdirectory()
-        return self.dwName
+        if not self.dwlabel.cget('text'):
+            self.show_error_message('请选择要下载的文件')
+            return ''
+        else:
+            self.dwName=tkinter.filedialog.askdirectory()
+            return self.dwName
     def help_about(self):
         about='''
         团队：疯狂码头

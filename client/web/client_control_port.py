@@ -195,5 +195,4 @@ class MyFtp_Client():
         # 通过协议打包发送
         my_protocol.quit_bale_TCP(self.s)
         self.s.close()
-        sys.exit()
         print("已退出")

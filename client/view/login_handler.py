@@ -81,7 +81,7 @@ class Login_handler:
         except ConfirmedPasswdNotMatch:
             self.page.register_view.show_error_message('确认密码与密码不吻合')
     def do_cancel(self):
-        
+        os.kill(self.child_pid,9)
         command = 'quit+ + +@end'
         self.comment_handler(command,self.client)
         self.page.close()

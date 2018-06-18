@@ -43,7 +43,7 @@ def run(op,data_addr,file,view_handeler):
             ask = my_protocol.unpake_TCP(s)[2]
             if ask=='ok':
                 CODE_NUM='0'
-                view_handeler.do_message(CODE_NUM) 
+                view_handeler.do_message(CODE_NUM,filename = file.get_name()) 
                 view_handeler.do_list()
             else:
                 print('上传失败')
@@ -77,8 +77,8 @@ def run(op,data_addr,file,view_handeler):
             if CODE_NUM =='11':
                 view_handeler.do_message(CODE_NUM)
             else:
-                view_handeler.do_message('0')
-                print('下载完成')
+                view_handeler.do_message('4',filename = file.split('/')[-1])
+                # print('下载完成')
             s.close() 
         # #关闭套接字
 

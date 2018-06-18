@@ -41,7 +41,7 @@ def control_port():
         myconnection, addr = ctrl_socket.accept()
         print('用户已登录',addr)
         process = Process(target=server_control_port.run,
-                          args=(myconnection, addr))
+                          args=(myconnection, addr,ctrl_socket))
         process.start()
     #
 # 当用户成功登录后,分配进程用来处理聊天,聊天将为群聊,故使用udp协议
