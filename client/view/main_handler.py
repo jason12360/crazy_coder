@@ -53,14 +53,18 @@ class Main_handler:
 			self.do_message(result)
 
 
+
 	def do_message(self,code,filename=''):
 		if code != '0' and code !='1' and code!='4':
+			self.page.deal_message('1')
 			self.page.show_error_message(self.ERROR_MAP[code])
 		elif code == '1':
-			pass
+			self.page.deal_message('1')
 		elif code == '0':
 			self.page.show_message(self.ERROR_MAP[code])
 			# self.do_list()
+			self.page.deal_message('0')
+			self.page.uplabel.config(text="＊＊当前未选择任何文件上传＊＊")
 			self.send_info_to_server('U',filename)
 		else:
 			self.page.show_message(self.ERROR_MAP[code])
@@ -102,3 +106,5 @@ class Main_handler:
 		os.kill(self.child_pid,9)
 		self.page.close()
 		sys.exit()
+	def show_progress(self,now_schedule,all_schedule):
+		self.page.change_schedule(now_schedule,all_schedule)

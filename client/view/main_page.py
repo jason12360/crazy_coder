@@ -1,4 +1,4 @@
-from fyc_version10 import Application
+from GUI_main import Application
 
 class MainPage(Application):
 	def __init__(self):
@@ -17,5 +17,7 @@ class MainPage(Application):
 		self.main_handler.do_upld(self.upName)
 	def close(self):
 		self.root.destroy()
+	def refresh(self,event):
+		self.main_handler.do_list()
 	
 

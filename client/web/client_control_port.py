@@ -92,13 +92,29 @@ class MyFtp_Client():
         self.s = s
         self.chat_queue = chat_queue
     def list_request(self, foldername=''):
-        # 发送
         my_protocol.list_bale_TCP(self.s, foldername)
         # 等待接收
-        data = my_protocol.unpake_TCP(self.s)
-        if data != -1:
-            f_property = data[2]
-            return f_property
+        data = ''
+        while True:
+            _ = self.s.recv(2048).decode()
+            if _[-4:]=='@end':
+                data += _
+                break
+            data+=_
+        x = data.split('+')
+        if x[0] in ['list','upld','dwld','chat','quit','login','reg']:
+            if x[3]=='@end':
+                return x[2]
+            else:
+                print('数据丢包')
+                return -1 
+        elif x[0]=='':
+                print("客户端意外退出")
+
+                return -1           
+        else:
+            print('数据丢包')
+            return -1
 
     #为服务器绑定视图句柄,供副线程调用
     def set_view_handler(self,handler):
@@ -167,6 +183,7 @@ class MyFtp_Client():
                 data_socket.close()
                 t = Thread(target=client_data_port.run, args=(
                     'd', data_addr,file_path,self.view_handler))
+                t.setDaemon(True)
                 t.start()
                 # if R==10:
                 #     CODE_NUM=10

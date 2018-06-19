@@ -24,13 +24,17 @@ def run(op,data_addr,file,view_handeler):
     if op=='u':
         try:
             #获取文件路径
-            op_path=file.get_server_path()+'/'+file.get_name()      
+            op_path=file.get_server_path()+'/'+file.get_name()
+            total_size = int(file.get_size())
+            current_size =0      
             with open(op_path,'rb') as f:
                 while True:
-                    data=f.read(2048)
+                    data=f.read(4096)
                     if not data:
                         break 
                     s.send(data)
+                    current_size +=len(data)
+                    view_handeler.show_progress(current_size,total_size)
         except Exception as E:
             print(E)
             #如果出错向前端句柄返回错误码'14'
@@ -41,6 +45,7 @@ def run(op,data_addr,file,view_handeler):
             time.sleep(0.1)
             s.send(b'upld+ + +@end')
             ask = my_protocol.unpake_TCP(s)[2]
+            #print(ask)
             if ask=='ok':
                 CODE_NUM='0'
                 view_handeler.do_message(CODE_NUM,filename = file.get_name()) 
@@ -57,7 +62,7 @@ def run(op,data_addr,file,view_handeler):
             #路径选择   
             with open(file,'wb') as f:
                 while True:
-                    data=s.recv(1024)
+                    data=s.recv(4096)
                     if data==b'@end':
                         break
                     f.write(data)

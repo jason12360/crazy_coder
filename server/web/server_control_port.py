@@ -76,8 +76,17 @@ class MyFtp_Server():
         self.file_all = self.ms.select_all_files()
         # 请求服务器内的文件，整理和文件列表和属性列表
         data = self.file_all.pack()
+        start = 0
+        self.client.send('list+ +'.encode())
+        while True:
+            if start+2048 >= len(data):
+                self.client.send(data[start:].encode())
+                self.client.send('+@end'.encode())
+                break
+            self.client.send(data[start:start+2048].encode()) 
+            start+=2048 
+
         #发送整个服务器文件的属性列表给客户端,data以字符串的形式
-        my_protocol.list_bale_TCP(self.client,str(data))       
 
     # 接受客户端下载请求，发送文件
     def send(self, f_property,filename):
@@ -97,6 +106,7 @@ class MyFtp_Server():
             DATA_PORT = int(my_protocol.unpake_TCP(self.client)[2])
             DATA_ADDR = (DATA_HOST, DATA_PORT)
             t = Thread(target=data_port.run, args=('d', DATA_ADDR,filename,self.ms))
+            t.setDaemon(True)
             t.start()
             #回发一个属性过去 
             # f_property=fd.pack()

@@ -39,7 +39,7 @@ def show_ask_filedialog():
 place_json={
     "TabStrip":{"relx":0.03, "rely":0.05,"relwidth":0.528, "relheight":0.55},
     "Tab_title":{"relx":0.004, "rely":0, "relwidth":1, "relheight":0.19},
-    "Tab_frame":{"relx":0.2, "rely":0.893, "relwidth":0.6, "relheight":0.1},
+    "Tab_frame":{"relx":0.2, "rely":0.893, "relwidth":0.4, "relheight":0.1},
     "Tab_label":{"relx":0.035, "rely":0.884, "relwidth":0.16, "relheight":0.12},
     "Tab_listbox":{"relx":0.003,"rely":0.115,"relwidth":0.98,"relheight":0.7},
     "Tab_scroll":{"relx":0.98, "rely":0, "relwidth":0.02, "relheight":1},
@@ -58,7 +58,8 @@ place_json={
         #'发送(S)': {"relx": 0.91, "rely": 0.927, "relwidth": 0.06, "relheight": 0.045}
         },
     '下载 (D)': {"relx":0.85, "rely":0.89, "relwidth":0.12, "relheight":0.1},
-        '导出选中日志(L)…':{"relx":0.35, "rely":0.9, "relwidth":0.22, "relheight":0.07},
+    '导出选中日志(L)…':{"relx":0.35, "rely":0.9, "relwidth":0.22, "relheight":0.07},
+    '刷新 (X)':{"relx":0.68, "rely":0.89, "relwidth":0.12, "relheight":0.1},
     "Search":{"relx":0.368, "rely":0.028, "relwidth":0.19, "relheight":0.046},
     "Chat":{"relx":0.618,"rely":0.062,"relwidth":0.352,"relheight":0.92},
     "Radio":{
@@ -67,7 +68,7 @@ place_json={
         },
     "Img1":{"relx":0.036, "rely":0.666, "relwidth":0.015, "relheight":0.029},
     "Up_Label":{"relx":0.065, "rely":0.665, "relwidth":0.185, "relheight":0.040},
-    "Down_Label":{"relx":0.21, "rely":0.91, "relwidth":0.55, "relheight":0.07},
+    "Down_Label":{"relx":0.21, "rely":0.91, "relwidth":0.3, "relheight":0.07},
     "Logout_Label":{"relx":0.55, "rely":0.884, "relwidth":0.4, "relheight":0.12},
     "Up_line0":{"relx":0.367, "rely":0.614, "relwidth":0.15, "relheight":0.029},
     "Up_line1":{"relx":0.035, "rely":0.725, "relwidth":0.242, "relheight":0.040},
@@ -126,6 +127,11 @@ class MyGUI(Frame):
         self.Tab1.bt = Mybutton(master,self.undefined,text="下载 (D)")
         self.button_dic["下载 (D)"]=self.Tab1.bt
         self.Tab1.bt.place(**self.dic["下载 (D)"])
+        self.Tab1.bt2 = Mybutton(master,self.undefined,text="刷新 (X)")
+        self.button_dic["刷新 (X)"]=self.Tab1.bt2
+        self.Tab1.bt2.place(**self.dic["刷新 (X)"])
+
+
         
     def createTab2(self,master):    
         self.Tab2.bt=Mybutton(master,self.undefined,text="导出选中日志(L)…")
@@ -215,7 +221,7 @@ class Application(MyGUI):
 
         Button_fun={'浏览 (V)': self.ready_up, 
                 '上传 (U)': self.upload,'下载 (D)':self.download,
-                "导出选中日志(L)…":self.logout }
+                "导出选中日志(L)…":self.logout,'刷新 (X)':self.refresh }
         Menu_fun={
             "文件(F)": {'上传本地文件  (Upload)': self.upload,
                   '下载文件到本地  (Dwload)':self.download, "退出  (Quit)": self.hello},
@@ -230,32 +236,15 @@ class Application(MyGUI):
         self.button_bind(Button_fun)
         self.menu_bind(Menu_fun)
         self.combox_bind()        
-
         self.uplabel.config(text="＊＊当前未选择任何文件上传＊＊")
         self.upline0.config(text="在线用户列表")
         
+        #self.upline4.config(text=chr(9989)+chr(9993)+"bfdbdf进度条进度条进度条进度条进度条进度条进度条进20%")
 
-        self.upline3.config(text="第三行")
-        self.upline4.config(text=chr(9989)+chr(9993)+"bfdbdf进度条进度条进度条进度条进度条进度条进度条进20%")
-        self.upline5.config(text="上传完毕!!!")
-        
-        
-
-        '''file_SQL=[
-             ["file.py","2048","2018-01-01 07:22:22","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/file.py"],
-             ["mysql_test.py","196","2018-03-06 11:42:13","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/mysql_test.py"],
-             ["my_protocol.py","744","2018-02-27 22:20:37","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/my_protocol.py"],
-             ["test_view.py","611","2018-05-06 01:02:58","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/test_view.py"],
-             ["server_class.py","690","2018-01-31 19:54:02","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/server_class.py"],
-             ["filefolder.py","387","2018-03-14 15:19:26","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/filefolder.py"],
-              ["file.py","2048","2018-01-01 07:22:22","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/file.py"],
-             ["mysql_test.py","196","2018-03-06 11:42:13","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/mysql_test.py"],
-             ["my_protocol.py","744","2018-02-27 22:20:37","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/my_protocol.py"],
-         ]'''
 
         log_SQL=[
-            ["3306","20148","up","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/file.py"],
-            ["9999","1910106","down","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/mysql_test.py"],
+            ["de12345678","20148","up","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/file.py"],
+            ["jason123","1910106","down","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/mysql_test.py"],
             ["4444","744","down","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/my_protocol.py"],
             ["4156","611","up","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/test_view.py"],
             ["8462","690","up","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/server_class.py"],
@@ -293,7 +282,7 @@ class Application(MyGUI):
         self.combox.bind("<<ComboboxSelected>>",self.logselect)  
 
     def files_display(self,files_list):
-        widths=[15,7,20,20,40]
+        widths=[15,9,20,20,40]
         title1=["文件名","大小","修改时间","创建时间","储存路径"]
         ListItems(self.Tab1.title.frame,"#DDDDDD",widths,title1)
         self.Tab1.lbox.config(scrollregion=(0,0,1200,50*len(files_list)))
@@ -323,7 +312,7 @@ class Application(MyGUI):
             lbox.see(onlinelist.index(onlinelist[0]))
     def searchuser(self,event):
         self.search.get("2")
-        #print(self.search)
+
     def logselect(self,event):
         print(self.combox.current)
 
@@ -332,22 +321,59 @@ class Application(MyGUI):
         self.logoutlabel.config(text="成功导出日志至路径……")
     def ready_up(self,event):
         self.upName = tkinter.filedialog.askopenfilename(
-            initialdir=os.path.abspath("fyc_version5"),
-            filetypes=[("py格式", ".py")])
+            initialdir=os.path.abspath("GUI_main.py"))
         self.uplabel.config(text=self.upName)
         self.upsize=os.path.getsize(self.upName)
-        self.upline1.config(text="文件大小:    "+str(self.upsize))
-        aaaa=time.ctime(os.path.getmtime(self.upName))
-        self.upline2.config(text="最后修改时间:    "+aaaa)
+        self.upline1.config(text="文件大小:    "+self.deal_upsize(self.upsize))
+        last_time=time.ctime(os.path.getmtime(self.upName))
+        self.upline2.config(text="最后修改时间:    "+last_time)
+        self.upline5.config(text="")
+        self.progress_bar()   ##进度条
+        
+
+
     def upload(self,event):
         self.uplabel.config(text="正在执行上传操作……")
         self.upline1.config(text="正在上传:    "+self.upName)
         for i in range(6):
             each=self.upsize/5
             self.upline2.config(text="已上传:    "+str(each*i)+"/"+str(self.upsize))
+    def progress_bar(self):
+        progress= Frame(self.root).place(**self.dic['Up_line4'])
+        self.mycanvas = Canvas(progress,width = 220,height = 30,bg = "#DDDDDD")  
+        self.mycanvas.place(**self.dic['Up_line4']) 
+        self.x1 = StringVar()  
+        #进度条以及完成程度  
+        self.out_rec = self.mycanvas.create_rectangle(5,5,305,25,outline = '#32CD32',width = 1)  
+        self.fill_rec =self.mycanvas.create_rectangle(5,5,5,25,outline = "",width = 0,fill = '#32CD32')  
+        Label(progress,textvariable = self.x1).place(**self.dic['Up_line5']) 
+        # self.change_schedule(now_schedule,all_schedule)  
+
+    def change_schedule(self,now_schedule,all_schedule):  
+        self.mycanvas.coords(self.fill_rec, (5, 5, 6 + (now_schedule/all_schedule)*300, 25))  
+        self.root.update()  
+        self.x1.set(str(round(now_schedule/all_schedule*100,2)) + '%')  
+        if round(now_schedule/all_schedule*100,2) == 100.00:  
+            self.x1.set("完成") 
     def hello(self):
         print("未绑定")
-
+    def deal_message(self,code):
+        if code == '0':
+            self.upline5.config(text="上传完毕!!!")
+        else:
+            self.upline5.config(text="上传等待!!!")
+    def deal_upsize(self,t):
+        if t<1024:
+            return str(t)+" B"
+        elif t<1024**2:
+            K=str(round(t/1024,3))+" K"
+            return K
+        elif t<1024**3:
+            M=str(round(t/1024**2,3))+" M"
+            return M
+        else:
+            G=str(round(t/1024**3,3))+" G"
+            return G
     def download(self,event):
         if not self.dwlabel.cget('text'):
             self.show_error_message('请选择要下载的文件')
@@ -364,6 +390,8 @@ class Application(MyGUI):
         感谢您的使用！
         ©2018 ''' 
         messagebox.showinfo('关于', about)  
+    def refresh(self,event):
+        pass
     def run(self):    
         self.root.mainloop()
     def close(self):

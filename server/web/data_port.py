@@ -19,7 +19,7 @@ def run(op,addr,f_property,ms):
             op_path=SYS_FIlE_PATH+f_property      
             with open(op_path,'rb') as f:
                 while True:
-                    data=f.read(1024)
+                    data=f.read(4096)
                     if not data:
                         break 
                     conn.send(data)
@@ -56,7 +56,7 @@ def run(op,addr,f_property,ms):
             file.set_server_path(op_path)      
             with open(op_path,'wb') as f:
                 while True:
-                    data=conn.recv(1024)
+                    data=conn.recv(4096)
                     if data==b'upld+ + +@end':
                         break
                     f.write(data)

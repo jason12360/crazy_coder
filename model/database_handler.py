@@ -72,7 +72,7 @@ class My_Mysql:
             'create table file(id int primary key auto_increment,\
                                filename char(50),\
                                filesize int,\
-                               file_path_on_server char(50),\
+                               file_path_on_server char(100),\
                                last_modified_time datetime,\
                                first_create_time datetime)default charset=utf8;')
 

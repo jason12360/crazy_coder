@@ -35,6 +35,21 @@ class File(object):
     def get_local_path(self):
         return self.filelocal_path
 
+    def deal_filesize(self,t):
+        if t<1024:
+            return str(t)+"B"
+        elif t<1024**2:
+            K=str(round(t/1024,3))+"K"
+            return K
+        elif t<1024**3:
+            M=str(round(t/1024**2,3))+"M"
+            return M
+        else:
+            G=str(round(t/1024**3,3))+"G"
+            return G
+        return t
+
+
     def get_type(self):
         pass
 
