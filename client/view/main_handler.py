@@ -24,7 +24,8 @@ class Main_handler:
 			"13":'上传失败,服务器端发生错误',
 			"14":'上传失败,客户端发生错误'
 			#这里定义各种错误返回什么信息
-			}	
+			}
+		self.log_list = []
 	def bind(self,comment_handler,client):
 		self.comment_handler = comment_handler
 		self.client = client
@@ -88,9 +89,24 @@ class Main_handler:
 	#等到数据端接收完成后,刷新文件列表页面
 
 	def display_chat(self,sig,frame):
-		print('收到信号..')
+		message = self.client.get_chat_word().split('\n')
+		op = message[0]
+		if op =='L':
+			self.page.user_display(message[1].split(','))
 		# print(self.client.get_chat_word())
-		self.page.chat_view.show(self.client.get_chat_word())
+		elif op in ['U','D']:
+			username = message[1].split('|')[0]
+			filename = message[1].split('|')[1]
+			if op == 'U':
+				self.log_list.append([username,filename,'上传',time.ctime()])
+				self.page.chat_view.show([op,username+'上传了'+filename])
+				self.page.logs_display(self.log_list)
+			elif op=='D':
+				self.log_list.append([username,filename,'下载',time.ctime()])
+				self.page.chat_view.show([op,username+'下载了'+filename])
+				self.page.logs_display(self.log_list)
+		else:
+			self.page.chat_view.show(message)
 
 	def send_info_to_server(self,op,filename):
 		msg = op +' '+ filename

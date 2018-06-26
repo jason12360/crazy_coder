@@ -242,26 +242,26 @@ class Application(MyGUI):
         #self.upline4.config(text=chr(9989)+chr(9993)+"bfdbdf进度条进度条进度条进度条进度条进度条进度条进20%")
 
 
-        log_SQL=[
-            ["de12345678","20148","up","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/file.py"],
-            ["jason123","1910106","down","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/mysql_test.py"],
-            ["4444","744","down","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/my_protocol.py"],
-            ["4156","611","up","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/test_view.py"],
-            ["8462","690","up","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/server_class.py"],
-            ["2983","387","down","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/filefolder.py"],
-            ["3306","20148","up","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/file.py"],
-            ["9999","1910106","down","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/mysql_test.py"],
-            ["4444","744","down","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/my_protocol.py"],
-            ["4156","611","up","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/test_view.py"],
-            ["8462","690","up","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/server_class.py"],
-            ["2983","387","down","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/filefolder.py"]
+        # log_SQL=[
+        #     ["de12345678","20148","up","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/file.py"],
+        #     ["jason123","1910106","down","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/mysql_test.py"],
+        #     ["4444","744","down","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/my_protocol.py"],
+        #     ["4156","611","up","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/test_view.py"],
+        #     ["8462","690","up","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/server_class.py"],
+        #     ["2983","387","down","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/filefolder.py"],
+        #     ["3306","20148","up","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/file.py"],
+        #     ["9999","1910106","down","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/mysql_test.py"],
+        #     ["4444","744","down","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/my_protocol.py"],
+        #     ["4156","611","up","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/test_view.py"],
+        #     ["8462","690","up","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/server_class.py"],
+        #     ["2983","387","down","2018-01-01 07:22:22","/home/tarena/lwh/my_ftp/upload/filefolder.py"]
         
-        ]
+        # ]
         # self.files_display(file_SQL)
-        self.logs_display(log_SQL)
+        # self.logs_display(log_SQL)
       
-        user_online=[["用户"+str(iii),"172.16.122."+str(iii)] for iii in range(1,100)]
-        self.user_display(self.lbox2,user_online)
+        # user_online=['a','b']
+        # self.user_display(self.lbox2,user_online)
 
     def menu_bind(self,Menu_fun):
         menubar = Mymenu(self.top)
@@ -295,21 +295,22 @@ class Application(MyGUI):
             FL.bind_label(self.dwlabel)
             FL.actions()
     def logs_display(self,logs_list):
-        widths=[13,7,7,17,40]
-        title2=["用户名","文件名","操作类型","操作时间","储存路径"]
+        widths=[13,18,7,17]
+        title2=["用户名","文件名","操作类型","操作时间"]
         ListItems(self.Tab2.title.frame,"#DDDDDD",widths,title2)
         self.Tab2.lbox.config(scrollregion=(0,0,1200,50*len(logs_list)))
         self.Tab2.lbox.flush()
-        # self.Tab2.lbox.bar.place(**self.dic["Tab_scroll"])
+        self.Tab2.lbox.bar.place(**self.dic["Tab_scroll"])
         for log in logs_list:
             ListItems(self.Tab2.lbox.frame,'#DDDDDD',widths,log).actions()
-    def user_display(self,lbox,onlinelist):
+    def user_display(self,onlinelist):
+        self.lbox2.delete(0, END)
         for fs in onlinelist:
-            fs="{0:15}   ({1!s:^})".format(*fs)            
-            lbox.insert(END,fs)
-            lbox.bind("<Button-1>", self.searchuser) 
-            lbox.select_set(onlinelist.index(onlinelist[0]))
-            lbox.see(onlinelist.index(onlinelist[0]))
+            # fs="{0:15}   ({1!s:^})".format(*fs)            
+            self.lbox2.insert(END,fs)
+            # lbox.bind("<Button-1>", self.searchuser) 
+            self.lbox2.select_set(onlinelist.index(onlinelist[0]))
+            self.lbox2.see(onlinelist.index(onlinelist[0]))
     def searchuser(self,event):
         self.search.get("2")
 

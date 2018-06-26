@@ -44,28 +44,25 @@ class MySearchEntry(Myentry):
         pass
 
 class Mybubble(Frame):
-    def __init__(self,master,text,**kwargs):
+    def __init__(self,master,text,path,b_color,t_color,**kwargs):
         super().__init__(master,height=80,width=300,bg='#FFFFFF')
         self.pack_propagate(0)
         self.text = text
         # self.pack(fill=X)
         #用于测试,如果主函数调用则,使用下方图片路径,非主函数条用使用上方图片路径
-        if __name__ =='__main__':
-            photo = PhotoImage(file='widgets_interface/resources/bubble.gif')
-        else:
-            photo = PhotoImage(file='view/widgets_interface/resources/bubble.gif')
+        photo = PhotoImage(file=path)
         self.image_lable = Label(self,image = photo,anchor=W,bg='#FFFFFF')
         self.image_lable.image = photo
         self.image_lable.place(relx = 0.5,rely = 0.5,anchor=CENTER)
         self.text_lable = Label(self,anchor=W)
-        self.text_lable.config(bg='#E2A2E4',text = self.text,justify=LEFT,wraplength=230,padx=5,fg='#FFFFFF')
+        self.text_lable.config(bg=b_color,text = self.text,justify=LEFT,wraplength=230,padx=5,fg=t_color)
         self.text_lable.place(relx = 0.04,rely = 0,relwidth = 0.8,anchor = NW)
 
 class Scrollabe_Frame(Canvas):
     def __init__(self,master,**kwargs):
         super().__init__(master,kwargs)
         # self.pack_propagate(0)
-        self.width = 1000
+        self.width = 430
         frame=Frame(self,height=2000,width=self.width,bg='#FFFFFF')
         frame.pack_propagate(0) 
         vbar=Scrollbar(self,orient=VERTICAL) #竖直滚动条
@@ -118,15 +115,24 @@ class ChatView(Frame):
         self.position = 0
         step = 0.05
         for word in self.words:
-            Mybubble(self.s.frame,text=word).pack(pady=10)
-            self.position+=step
+            n = 0
+            if word[0] in ['C','A','U','D']:
+                Mybubble(self.s.frame,text=''.join(word[1:]),
+                    path='view/widgets_interface/resources/bubble.gif',
+                    b_color='#E2A2E4',t_color='#FFFFFF').place(x=0,y=self.position/step*100+20)
+                self.position+=step
+            elif word[0] == 'S':
+                Mybubble(self.s.frame,text=''.join(word[1:]),
+                    path='view/widgets_interface/resources/bubble3.gif',
+                    b_color='#6CEF48',t_color='#555555').place(x=100,y=self.position/step*100+20)
+                self.position+=step
         if self.position/step >5:
             self.s.yview_moveto(self.position-5*step)
-        self.t.delete(1.0,END)
     def launch(self):
         text = 'C '+self.t.get(1.0,END)
         self.send_queue.put(text)
         os.kill(self.child_pid,41)
+        self.t.delete(1.0,END)
         
 
 

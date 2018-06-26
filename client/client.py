@@ -24,7 +24,7 @@ send_queue=Queue(1)
 
 def control_port(child_pid):
     # 建立登录和主要功能连接,端口号为xxx
-    CTRL_HOST = '176.122.16.201'
+    CTRL_HOST = '127.0.0.1'
     CTRL_PORT = 18527
     CTRL_ADDR = (CTRL_HOST, CTRL_PORT)
     ctrl_socket = socket()

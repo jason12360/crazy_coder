@@ -4,12 +4,13 @@ import os
 from socket import *
 import sys
 def run(parent_pid,_recv_queue,_send_queue):
-	HOST = '176.122.16.201'
+	HOST = '127.0.0.1'
 	PORT = 18529
 	global ADDR
 	ADDR = (HOST, PORT)
 	global s
 	s = socket(AF_INET, SOCK_DGRAM)
+
 	signal.signal(41,get_chat)
 	global send_queue
 	global recv_queue

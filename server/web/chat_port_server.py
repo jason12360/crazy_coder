@@ -1,4 +1,5 @@
 from socket import *
+import time
 def run():
     HOST = ''
     PORT = 18529
@@ -11,6 +12,7 @@ def run():
     # 循环接收请求
     while True:
         msg, addr = s.recvfrom(1024)
+        print(addr)
         msg = msg.decode()
         print(msg)
         cmd = msg.split(' ')
@@ -27,39 +29,55 @@ def run():
         else:
             s.sendto('请求错误'.encode(), addr)
 
+#登录的时候将用户列表发给所有人
 def do_login(s, user, name, addr):
-    msg = '\n欢迎 %s 进入聊天室' % name
+    msg = 'A\n欢迎 %s 进入聊天室' % name
     # 通知所有人
     for i in user:
         s.sendto(msg.encode(), i)
     # 将用户加入字典
     user[addr] = name
+    time.sleep(0.5)
+    msg = 'L\n'+pack(user)
+    for i in user:
+        s.sendto(msg.encode(), i)
     return
 def do_upload(s, user, cmd,addr):
-    msg =user[addr]+'上传了'+cmd
+    msg ='U\n'+user[addr]+'|'+cmd
     for i in user:
         # if i != cmd[1]:
         s.sendto(msg.encode(), i)
     return
 def do_download(s, user, cmd,addr):
-    msg =user[addr]+'下载了'+cmd
+    msg ='D\n'+user[addr]+'|'+cmd
     for i in user:
         # if i != cmd[1]:
         s.sendto(msg.encode(), i)
     return
 # 实现群聊功能
 def do_chat(s, user, cmd,addr):
-    msg = '\n%-4s: %s' % (user[addr], ' '.join(cmd[1:]))
+    msg = 'C\n%-4s: %s' % (user[addr], ' '.join(cmd[1:]))
     # 发送给所有人除了自己
     for i in user:
-        # if i != cmd[1]:
-        s.sendto(msg.encode(), i)
+        if i != addr:
+            s.sendto(msg.encode(), i)
+    msg = 'S\n%-4s: %s' % (user[addr], ' '.join(cmd[1:]))
+    s.sendto(msg.encode(),addr)
     return
 
 # 实现退出功能
 def do_quit(s,user,addr):
-    msg = '\n' + user[addr] +'离开了聊天室'
+    msg = 'A\n' + user[addr] +'离开了聊天室'
     del user[addr]
     for i in user:
         s.sendto(msg.encode(),i)
+    msg = 'L\n'+pack(user)
+    for i in user:
+        s.sendto(msg.encode(), i)
     return
+
+def pack(user):
+    result = ''
+    for i in user:
+        result+=user[i]+'    ('+i[0]+'),'
+    return result[:-1]
