@@ -3,12 +3,13 @@ import sys,os
 from socket import *
 from file import *
 import my_protocol
+from database_handler import *
 # 服务器文件夹
 SYS_FIlE_PATH= "/home/tarena/ftp_base/"
 #上传路径
 SYS_FIlE_PATH_O= "/home/tarena/ftp_base/"
 
-def run(op,addr,f_property,ms):
+def run(op,addr,f_property):
     conn = socket()
     time.sleep(0.1)
     conn.connect(addr)
@@ -68,7 +69,9 @@ def run(op,addr,f_property,ms):
             #没有发生错误,通知客户端发送成功
             time.sleep(0.1)
             #接收完成发送ok
+            ms = My_Mysql()
             ms.add_file(file)
+            ms.close()
             print('finish')
             conn.send(b'upld+ +ok+@end')
             #返回结果给进程

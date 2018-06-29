@@ -37,18 +37,30 @@ class MyPasswordEntry(Myentry):
         self.config(show='*')
 #继承此类,复写key方法,完成相应处理
 class MySearchEntry(Myentry):
-    def __init__(self,master,**kwargs):
-        super().__init__(master,**kwargs)
-        self.bind('<Key>',self.key)
-    def key(self,event):
-        pass
+
+    def __init__(self, master, page, **kwargs):
+        super().__init__(master, **kwargs)
+        self.page = page
+        self.bind('<KeyRelease>', self.key)
+
+    def key(self, event):
+        self.new_list = []
+        self.keyrelease = self.get()
+        print("键入结果：", self.keyrelease)
+        for ii in self.page.get_file_list():
+            if self.keyrelease in ii[0]:
+                self.new_list.append(ii)
+        for FL in self.page.FL:
+            FL.destroy()
+        self.page.files_display(self.new_list)
+
+
 
 class Mybubble(Frame):
     def __init__(self,master,text,path,b_color,t_color,**kwargs):
         super().__init__(master,height=80,width=300,bg='#FFFFFF')
         self.pack_propagate(0)
         self.text = text
-        # self.pack(fill=X)
         #用于测试,如果主函数调用则,使用下方图片路径,非主函数条用使用上方图片路径
         photo = PhotoImage(file=path)
         self.image_lable = Label(self,image = photo,anchor=W,bg='#FFFFFF')
@@ -61,15 +73,13 @@ class Mybubble(Frame):
 class Scrollabe_Frame(Canvas):
     def __init__(self,master,**kwargs):
         super().__init__(master,kwargs)
-        # self.pack_propagate(0)
         self.width = 430
         frame=Frame(self,height=2000,width=self.width,bg='#FFFFFF')
         frame.pack_propagate(0) 
-        vbar=Scrollbar(self,orient=VERTICAL) #竖直滚动条
+        vbar=Scrollbar(self,orient=VERTICAL) 
         vbar.pack(side=RIGHT, fill=Y)
         vbar.config(command=self.yview)
-        self.config(yscrollcommand=vbar.set) #设置  
-        
+        self.config(yscrollcommand=vbar.set)  
         self.create_window((0,0), window=frame,anchor=NW)  #create_window
         self.frame =frame
         self.bar = vbar
@@ -93,16 +103,11 @@ class ChatView(Frame):
         self.words = []
 
     def display(self):
-        '''
-        用来画聊天试图
-        '''
         self.s = Scrollabe_Frame(self,scrollregion=(0,0,400,2000))
         self.s.place(relx=0,rely=0,relwidth=1,relheight=0.7)
-        self.t = Text(self)
+        self.t = Text(self,font=("微软雅黑",21))
         self.t.place(relx=0,rely=0.745,relwidth=1,relheight=0.28)
-        # self.s.yview_moveto(1.0)
         b = Button(self,text = '发送  (S)',command=self.launch)
-        #Mybutton(self,master,fun,**kwargs)
         b.place(relx=0,rely=0.952,relwidth=1,relheight=0.05)
     def setup(self,child_id,send_queue):
         self.child_pid= child_id
@@ -146,24 +151,18 @@ class MainView(Frame):
         self.display()
 
     def display(self):
-        '''
-        用来画聊天试图
-        '''
         l = Label(self, text='这是主视图')
         l.pack()
 
 class Scrollabe_Listbox(tk.Canvas):
     def __init__(self,master,_height=20000,**kwargs):
         super().__init__(master,kwargs)
-        # self.pack_propagate(0)
-
         self.frame=tk.Frame(self,width=1000,height=_height)
-        # self.frame.pack(fill=tk.BOTH,expand=1)
         self.frame.pack_propagate(0) 
-        self.bar=tk.Scrollbar(self,orient=tk.VERTICAL) #竖直滚动条
+        self.bar=tk.Scrollbar(self,orient=tk.VERTICAL) 
         self.bar.config(command=self.yview)
         self.config(yscrollcommand=self.bar.set)     
-        self.create_window((0,0), window=self.frame,anchor=tk.NW)  #create_window
+        self.create_window((0,0), window=self.frame,anchor=tk.NW) 
 
     def flush(self):
         self.delete(self.frame)
@@ -258,6 +257,13 @@ class ListItems(Frame):
         return t
 
 
+
+
+
+
+
+
+
 def fun1():
     print('hahahhah')
 def main():
@@ -277,10 +283,6 @@ def main():
     e.pack()
     b = Mybutton(top,fun1,text = '登录',width = 15,height =2)
     b.pack(pady = 10)
-    # frame = tk.Frame(top)
-    # frame.pack(fill=tk.X)
-    # bubble = Mybubble(frame,'sajkd')
-    # bubble.pack()
     s = Scrollabe_Frame(top,_width=400,_height=500
         ,scrollregion=(0,0,400,2500))
     s.pack()

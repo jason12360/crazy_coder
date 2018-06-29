@@ -45,6 +45,7 @@ class Main_handler:
 		if file_folder_str != r'{}':
 			self.file_folder = Filefolder()
 			self.file_folder.unpack(file_folder_str)
+			self.page.set_file_list(self.file_folder.to_list())
 			self.page.files_display(self.file_folder.to_list())
 #当用户点击下载，调用此函数
 	def do_dwld(self,filename,download_path):

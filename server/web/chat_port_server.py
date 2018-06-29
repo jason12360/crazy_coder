@@ -18,16 +18,27 @@ def run():
         cmd = msg.split(' ')
         if cmd[0] == 'L':
             do_login(s, user, cmd[1], addr)
-        elif cmd[0] == 'C':
-            do_chat(s, user, cmd,addr)
-        elif cmd[0] == 'Q':
-            do_quit(s,user,addr)
-        elif cmd[0] == 'U':
-            do_upload(s,user,cmd[1],addr)
-        elif cmd[0] == 'D':
-            do_download(s,user,cmd[1],addr)
         else:
-            s.sendto('请求错误'.encode(), addr)
+            if addr not in user:
+                for _ in user:
+                    if _[0]==addr[0]:
+                        user[addr] = user[_]
+                        print('用户'+addr[0]+'端口变化为'+str(addr[1]))
+                        del user[_]
+                        break
+                else:
+                    s.sendto('非法地址,禁止连接'.encode(), addr)
+                    continue
+            if cmd[0] == 'C':
+                do_chat(s, user, cmd,addr)
+            elif cmd[0] == 'Q':
+                do_quit(s,user,addr)
+            elif cmd[0] == 'U':
+                do_upload(s,user,cmd[1],addr)
+            elif cmd[0] == 'D':
+                do_download(s,user,cmd[1],addr)
+            else:
+                s.sendto('请求错误'.encode(), addr)
 
 #登录的时候将用户列表发给所有人
 def do_login(s, user, name, addr):

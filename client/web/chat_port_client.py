@@ -4,7 +4,7 @@ import os
 from socket import *
 import sys
 def run(parent_pid,_recv_queue,_send_queue):
-	HOST = '127.0.0.1'
+	HOST = '176.122.16.201'
 	PORT = 18529
 	global ADDR
 	ADDR = (HOST, PORT)

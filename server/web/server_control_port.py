@@ -65,7 +65,7 @@ class MyFtp_Server():
 
         self.client = conn
         self.addr=addr
-        self.ms = My_Mysql()
+
     # 获取list
     #子线程给父进程传参用
     def set_data(self,v):
@@ -73,7 +73,9 @@ class MyFtp_Server():
         R = v   
 
     def list(self, foldername):
+        self.ms = My_Mysql()
         self.file_all = self.ms.select_all_files()
+        self.ms.close()
         # 请求服务器内的文件，整理和文件列表和属性列表
         data = self.file_all.pack()
         start = 0
@@ -93,7 +95,9 @@ class MyFtp_Server():
         CODE_NUM=0
         # 如果需要上传下载,开辟新线程进行处理
         # 搜索系统是否有这个文件
+        self.ms = My_Mysql()
         fd = self.ms.select_file_by_filename(filename)
+        self.ms.close()
         if fd == None:
             # 返回不存在的代码
             CODE_NUM='2'
@@ -105,7 +109,7 @@ class MyFtp_Server():
             DATA_HOST = self.addr[0]
             DATA_PORT = int(my_protocol.unpake_TCP(self.client)[2])
             DATA_ADDR = (DATA_HOST, DATA_PORT)
-            t = Thread(target=data_port.run, args=('d', DATA_ADDR,filename,self.ms))
+            t = Thread(target=data_port.run, args=('d', DATA_ADDR,filename,))
             t.setDaemon(True)
             t.start()
             #回发一个属性过去 
@@ -131,7 +135,9 @@ class MyFtp_Server():
         CODE_NUM=0
         # filename = os.path.split(filename)[-1]
         # 搜索系统是否有这个文件
+        self.ms = My_Mysql()
         fd = self.ms.select_file_by_filename(filename)
+        self.ms.close()
         if fd == None:
             # 不存在,可以上传,给予客户端回应,客户端接收到此消息后,打开副线程进行主动连接,并回复
             #服务端相应端口号,用于数据通信
@@ -140,7 +146,7 @@ class MyFtp_Server():
             DATA_PORT = int(my_protocol.unpake_TCP(self.client)[2])
             DATA_ADDR = (DATA_HOST, DATA_PORT)
             
-            t = Thread(target=data_port.run,args=('u',DATA_ADDR,f_property,self.ms))
+            t = Thread(target=data_port.run,args=('u',DATA_ADDR,f_property,))
             t.setDaemon(True)
             t.start()
             # #编写属性
@@ -175,7 +181,9 @@ class MyFtp_Server():
     # 登录
     def login(self, username, password):
         # 和mysql比对后返回
+        self.ms = My_Mysql()
         result = self.ms.select_user(username)
+        self.ms.close()
         if not result:
             self.client.send(b'N')
         else: 
@@ -186,7 +194,9 @@ class MyFtp_Server():
                 self.client.send(b'N')
    
     def register(self,username,password):
+        self.ms = My_Mysql()
         result = self.ms.select_user(username)
+        self.ms.close()
         if not result:
             self.ms.add_user(username,password)
             self.username = username
